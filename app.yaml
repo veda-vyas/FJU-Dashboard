@@ -1,0 +1,24 @@
+application: fju-dashboard
+version: 1
+runtime: python27
+api_version: 1
+threadsafe: yes
+
+
+inbound_services:
+- mail_bounce
+
+handlers:
+- url: /(.*\.(gif|png|jpg|ico|js|css|html|style))
+  static_files: \1
+  upload: (.*\.(gif|png|jpg|ico|js|css|html|style))
+
+
+- url: /.*
+  script: main.app
+
+libraries:
+- name: webapp2
+  version: "2.5.2"
+- name: jinja2
+  version: latest
