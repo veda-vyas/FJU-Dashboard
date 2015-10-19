@@ -115,7 +115,13 @@ var student = {
 							highest_math_score:"",
 							highest_writing_score:""
 						}
-					}
+					},
+					course: {
+							courseName:"",
+							electives: "",
+							specialization:""
+							
+						}
 				  }
 var values = {};
 var tests_taken = 0

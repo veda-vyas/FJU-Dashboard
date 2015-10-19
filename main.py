@@ -39,7 +39,7 @@ JINJA_ENVIRONMENT = jinja2.Environment(
 class MainHandler(webapp2.RequestHandler):
     def get(self, page):
         if page == '/':
-            page = 'Apply.html'
+            page = 'apply-pin.html'
 	template = JINJA_ENVIRONMENT.get_template(page)
 	self.response.write(template.render())
 
@@ -180,6 +180,9 @@ class Student(ndb.Model):
     sat_ctitical_reading = ndb.StringProperty(indexed=True)
     sat_Mathematics = ndb.StringProperty(indexed=True)
     sat_writing = ndb.StringProperty(indexed=True)
+    courseName = ndb.StringProperty(indexed=True)
+    electives = ndb.StringProperty(indexed=True)
+    specialization = ndb.StringProperty(indexed=True)
     
     
 
@@ -275,6 +278,9 @@ class saveStudent(webapp2.RequestHandler):
                 row.sat_ctitical_reading = student['tests']['test']['s_reading']
                 row.sat_Mathematics = student['tests']['test']['s_mathematics']
                 row.sat_writing = student['tests']['test']['s_writing']
+                row.courseName = student['course']['courseName']
+                row.electives = student['course']['electives']
+                row.specialization = student['course']['specialization']
                 row.put()
                 self.response.write("success1")
         else:
@@ -309,6 +315,7 @@ class getStudent(webapp2.RequestHandler):
         qry = Student.query(ancestor = Student_key(keycontent))
         qry = qry.filter(Student.email == email)
         data = qry.fetch()
+        course = {}
         student = {}
         login = {}
         profile = {}
@@ -444,6 +451,11 @@ class getStudent(webapp2.RequestHandler):
             
             testing['test'] = test
             student['tests'] = testing
+
+            course["courseName"] = row.courseName
+            course["electives"] = row.electives
+            course["specialization"] = row.specialization
+            student["course"] = course
                                 
         student_json = json.dumps(student)
         self.response.write(student_json)
@@ -492,7 +504,7 @@ class sendPin(webapp2.RequestHandler):
             if skype != "":
                 row.skype = skype
             data.put()
-        message = mail.EmailMessage(sender="FJU Admissions Team <apply@fju.us>",
+        message = mail.EmailMessage(sender="FJU <apply@fju.us>",
                                 subject="Enter the PIN "+pin+" in FJU Application form")
 
         message.to = "<"+email+">"
@@ -501,7 +513,7 @@ Hello """+email+ """,
 
 Thank you for your interest in FJU.
 
-Please enter the following PIN in the FJU application to validate your email.
+Please enter the following PIN on the FJU.US application to validate your email.
 
 """+pin + """
 
