@@ -181,7 +181,7 @@ class Student(ndb.Model):
     sat_Mathematics = ndb.StringProperty(indexed=True)
     sat_writing = ndb.StringProperty(indexed=True)
     courseName = ndb.StringProperty(indexed=True)
-    electives = ndb.StringProperty(indexed=True)
+    breadthCourses = ndb.StringProperty(indexed=True)
     specialization = ndb.StringProperty(indexed=True)
     
     
@@ -279,7 +279,7 @@ class saveStudent(webapp2.RequestHandler):
                 row.sat_Mathematics = student['tests']['test']['s_mathematics']
                 row.sat_writing = student['tests']['test']['s_writing']
                 row.courseName = student['course']['courseName']
-                row.electives = student['course']['electives']
+                row.breadthCourses = student['course']['breadthCourses']
                 row.specialization = student['course']['specialization']
                 row.put()
                 self.response.write("success1")
@@ -453,11 +453,106 @@ class getStudent(webapp2.RequestHandler):
             student['tests'] = testing
 
             course["courseName"] = row.courseName
-            course["electives"] = row.electives
+            course["breadthCourses"] = row.breadthCourses
             course["specialization"] = row.specialization
             student["course"] = course
                                 
         student_json = json.dumps(student)
+        self.response.write(student_json)
+
+class getStudents(webapp2.RequestHandler):
+    def post(self):
+        #get student
+        keycontent = self.request.get('logger_name',"studentKey")
+        qry = Student.query(ancestor = Student_key(keycontent))
+        data = qry.fetch()
+        
+        students = {}
+        for row in data:    
+            course = {}
+            student = {}
+            login = {}
+            profile = {}
+            pi = {}
+            adr = {}
+            con = {}
+            geo = {}
+            dh = {}
+            ch = {}
+            family = {}
+            household = {}
+            parent1 = {}
+            parent2 = {}
+            education = {}
+            school = {}
+            ei = {}
+            cu = {}
+            grd = {}
+            testing = {}
+            test = {}        
+            pi['first_name'] = row.first_name  
+            pi['last_name'] = row.last_name  
+            profile['personal_information'] = pi
+
+            con['email'] = row.email  
+            con['phone_no'] = row.phone  
+            con['skype_id'] = row.skype
+            profile['contact_details'] = con
+
+            geo['citizenship'] = row.citizenship
+            profile['geography'] = geo
+            
+            dh['disciplinary_history'] = row.disciplinary_history
+            profile['disciplinary_history'] = dh
+            
+            ch['criminal_history'] = row.criminal_history
+            profile['criminal_history'] = ch
+            student['profile'] = profile
+            
+            school['no_of_schools'] = row.no_of_schools  
+            school['school_name'] = row.school_name  
+            education['school'] = school
+            
+            ei['education_interruption'] = row.education_interruption
+            education['education_interruption'] = ei
+            
+            cu['no_of_collage_or_university_level_courses_taken'] = row.no_of_collage_or_university_level_courses_taken
+            education['collage_university'] = cu
+            
+            grd['class_ranking'] = row.class_ranking  
+            grd['grad_class_size'] = row.grad_class_size  
+            grd['cumulative_GPA'] = row.cumulative_GPA  
+            grd['GPA_scale'] = row.GPA_scale
+            education['grades'] = grd
+            student['education'] = education
+            
+            test['tests_taken'] = row.tests_taken  
+            test['test_name'] = row.test_name  
+            test['highest_critical_reading_score'] = row.highest_critical_reading_score  
+            test['highest_math_score'] = row.highest_math_score  
+            test['highest_writing_score'] = row.highest_writing_score
+            test['t_listening'] = row.toefl_listening
+            test['t_speaking'] = row.toefl_speaking
+            test['t_reading'] = row.toefl_reading
+            test['t_writing'] = row.toefl_writing
+            test['a_english'] = row.act_engilsh
+            test['a_mathematics'] = row.act_mathematics
+            test['a_science_reasoning'] = row.act_science_reasoning
+            test['a_reading'] = row.act_reading
+            test['s_reading'] = row.sat_ctitical_reading
+            test['s_mathematics'] = row.sat_Mathematics
+            test['s_writing'] = row.sat_writing
+            
+            testing['test'] = test
+            student['tests'] = testing
+
+            course["courseName"] = row.courseName
+            course["breadthCourses"] = row.breadthCourses
+            course["specialization"] = row.specialization
+            student["course"] = course
+            students[row.email] = student
+                                
+        student_json = json.dumps(students)
         self.response.write(student_json)
 class existStudent(webapp2.RequestHandler):
     def post(self):
@@ -837,6 +932,7 @@ app = webapp2.WSGIApplication([
     (r'/student/savedetails',saveStudent),
     (r'/student/existstudent',existStudent),
     (r'/meta/getStudentObj', getStudent),
+    (r'/meta/getStudentsObj', getStudents),
     (r'/meta/sendpin', sendPin),
     (r'/meta/validatepin', validatePin),
     (r'/meta/sessionexist', existSesn),

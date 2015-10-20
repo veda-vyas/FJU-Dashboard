@@ -118,7 +118,7 @@ var student = {
 					},
 					course: {
 							courseName:"",
-							electives: "",
+							breadthCourses: "",
 							specialization:""
 							
 						}

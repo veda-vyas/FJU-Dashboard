@@ -136,13 +136,23 @@ button {
 			student = JSON.parse(student);
 			student.course.courseName = courseName;
 			sendData(student);
-			location.href = "Profile.html"
+			location.href = "Courses.html";
 		});
 	});
   	}
   
   });
-  
+  $(document).ready(function(){
+
+   $.post("/meta/sessionexist",{dummy:"dum"},function(data){
+      console.log(data);
+      $.post( "/meta/getStudentObj",{email:data}, function( student ) {
+         student = JSON.parse(student);
+         $("#courses").val(student.course.courseName);
+      });
+   });
+
+ });
   function sendData(student) {	
 	$.ajax({
     url: '/student/savedetails',

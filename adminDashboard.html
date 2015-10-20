@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<html lang="en">
+   <head>
+      <link href="style.css" rel="stylesheet" type="text/css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap-theme.min.css">
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+      <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
+      <script src="https://code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+      <link type="text/css" rel="stylesheet" href="intlTelInput.css">
+      <link type="text/css" href="bootstrap-form-helpers.min.css" rel="stylesheet" media="screen">
+      <script src="intlTelInput.js"></script>
+      <script src="bootstrap-formhelpers.min.js"></script>
+      <script src="heatmap.js"></script>
+      <title>Dashboard</title>
+   </head>
+   <style type="text/css">
+      td, th {
+         text-align: center;
+      }
+   </style>
+   <body>
+      <div id="headerwrap" class="container-fluid">
+         <div class="row" style="background-color:#2d4250; padding-top:5px; padding-bottom:5px">
+            <div class="col-md-2 text-right" style="padding-right:50px">
+               <img height="75px"; width="75px"; src="FJU1.jpg" style="border-radius:50%">
+            </div>
+            <div class="col-md-10">
+               <h2 style="color:rgba(255, 255, 255, .9); font-family:lucida calligraphy">Franklin Jefferson University</h2>
+            </div>
+         </div>
+      </div><br>
+      <div class="container">
+         <table class="table table-responsive">
+            <thead>
+               <tr>
+                 <th>Student Name</th>
+                 <th>Email Address</th>
+                 <th>Course Opted</th>
+                 <th>GCT Score</th>
+                 <th>Cumulative GPA</th>
+                 <th>Nativity</th>
+                 <th>Tuition Fees</th>
+               </tr>
+            </thead>
+            <tbody>
+            </tbody>
+         </table>
+      </div>
+   </body>
+   <script type="text/javascript">
+         //console.log(data);
+         $.post( "/meta/getStudentsObj", function( students ) {
+            console.log(students);
+            students = JSON.parse(students);
+            var keys = Object.keys(students);
+             var tr = ""
+            for (var i in keys){
+               //console.log(keys[i]);
+               //console.log(students[keys[i]].course.courseName);
+               console.log(keys[i]);
+               console.log(students[keys[i]].profile.personal_information.first_name);
+                tr = tr+"<tr> <td id='name"+i+"'>"+students[keys[i]].profile.personal_information.first_name +' '+students[keys[i]].profile.personal_information.last_name+"</td> <td id='email"+i+"'>"+students[keys[i]].profile.contact_details.email+"</td> <td id='course"+i+"'>"+students[keys[i]].course.courseName+"</td> <td id='gct"+i+"'></td> <td id='gpa"+i+"'>"+students[keys[i]].education.grades.cumulative_GPA + "/" +students[keys[i]].education.grades.GPA_scale+"</td> <td id='nativty"+i+"'>"+students[keys[i]].profile.geography.citizenship+"</td> <td id='fee"+i+"'></td> </tr>";
+               // $("#name"+i).append(students[keys[i]].profile.personal_information.first_name +' '+students[keys[i]].profile.personal_information.last_name); 
+               // $("#course"+i).append(students[keys[i]].course.courseName);
+               // $("#email"+i).append(students[keys[i]].profile.contact_details.email);
+               // $("#nativty"+i).append(students[keys[i]].profile.geography.citizenship);
+               // $("#gpa"+i).append(students[keys[i]].education.grades.cumulative_GPA + "/" +students[keys[i]].education.grades.GPA_scale);
+            }
+             $("tbody").html(tr);
+            //$("#salutation").html("<b>Congratulations "+student.profile.personal_information.first_name+"!</b>");
+            //$("#selectedCourse").html("You have now succesfully enrolled into <b>"+student.course.courseName+ "</b> Course.");
+            // var i = 1;
+            
+         });
+   </script>
+</html>
