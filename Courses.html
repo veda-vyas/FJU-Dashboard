@@ -135,7 +135,7 @@ button {
 </div>
 </div>  
 
-<button type="button" id="submit" class="btn btn-primary" style="margin:0 auto;display:block">Next</button>
+<button type="button" id="submit" class="btn btn-primary" style="margin:0 auto;display:block">Submit</button>
 
         </div><!-- end container -->
     </div><!-- end main-wrap -->
@@ -181,13 +181,37 @@ button {
                 student.course.breadthCourses = breadthCourses;
                 student.course.specialization = specialization;
                 sendData(student);
-                location.href = "Profile.html"
-              
+                location.href = "enrollmentConfirmation.html"        
         });
       });
     }
-     
 });
+
+$(document).ready(function(){
+
+        $.post("/meta/sessionexist",{dummy:"dum"},function(data){
+           console.log(data);
+            $.post( "/meta/getStudentObj",{email:data}, function( student ) {
+              student = JSON.parse(student);
+              var $radios = $('input:radio[name=specialization]');
+              if($radios.is(':checked') === false) {
+                var value = student.course.specialization;
+                $radios.filter('[value="'+value+'"]').prop('checked', true);
+              }
+
+              var breadthCourses = student.course.breadthCourses;
+              var list = breadthCourses.split(", ")
+
+              for(var i = 0; i < 4; i++) {
+                console.log(list[i]);
+                 var $radios = $('input[name=breadthCourses]');
+                $radios.filter('[value="'+list[i]+'"]').prop('checked', true);
+                
+              }
+             
+            });
+         });
+  });
   function sendData(student) {  
   $.ajax({
     url: '/student/savedetails',

@@ -13,23 +13,52 @@
       <script src="intlTelInput.js"></script>
       <script src="bootstrap-formhelpers.min.js"></script>
       <script src="heatmap.js"></script>
+      <script type="text/javascript" src="app.js"></script>
       <title>Dashboard</title>
    </head>
+   <style type="text/css">
+      a{
+         padding: 25px;
+         color: rgba(255, 255, 255, .9); 
+         font-family: lucida calligraphy;
+      }
+      a:hover {
+         color: rgba(255, 255, 255, .9);
+      }
+   </style>
    <body>
       <div id="headerwrap" class="container-fluid">
-         <div class="row" style="background-color:#2d4250; padding-top:5px; padding-bottom:5px">
-            <div class="col-md-2 text-right" style="padding-right:50px">
-               <img height="75px"; width="75px"; src="FJU1.jpg" style="border-radius:50%">
-            </div>
-            <div class="col-md-10">
-               <h2 style="color:rgba(255, 255, 255, .9); font-family:lucida calligraphy">Franklin Jefferson University</h2>
-            </div>
-         </div>
-      </div>
+   <div class="row" style="background-color:#2d4250; padding-top:5px; padding-bottom:5px">
+   <div class="col-md-2 text-right" style="padding-right:50px">
+   <img height="75px"; width="75px"; src="FJU1.jpg" style="border-radius:50%">
+   </div>
+   <div class="col-md-10 row">
+   <h2 class="col-md-6" style="color:rgba(255, 255, 255, .9); font-family:lucida calligraphy">Franklin Jefferson University</h2>
+   <div class="col-md-6 text-right">
+      <br>
+      <br>
+      <a id="myprofile" href="Profile.html"></a>
+      <a href="#">Course Catalog</a>
+      <a href="studentDashboard.html">My dashboard</a>
+      <a href="#" name="logout">Logout</a>
+   </div>
+   </div> 
+   </div>   
+   </div>
       <br>
       <div class="container">
          <h3>Sorry!</h3><br>
          <p>Admission was not given to you yet. Please visit back for updates.</p>
       </div>
    </body>
+   <script type="text/javascript">
+      $.post("/meta/sessionexist",{dummy:"dum"},function(data){
+         console.log(data);
+         $.post( "/meta/getStudentObj",{email:data}, function( student ) {
+            console.log(student);
+            student = JSON.parse(student);
+            $("#myprofile").html("<b>"+student.profile.personal_information.first_name+"</b>");
+         });
+      });
+   </script>
 </html>

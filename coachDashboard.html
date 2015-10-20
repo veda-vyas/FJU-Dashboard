@@ -38,10 +38,10 @@
                  <th>Student Name</th>
                  <th>Email Address</th>
                  <th>Course Opted</th>
+                 <th>GCT Score</th>
                  <th>Cumulative GPA</th>
                  <th>Nativity</th>
                  <th>Tuition Fees</th>
-                 <th></th>
                </tr>
             </thead>
             <tbody>
@@ -61,24 +61,18 @@
                //console.log(students[keys[i]].course.courseName);
                console.log(keys[i]);
                console.log(students[keys[i]].profile.personal_information.first_name);
-               var val= "";
-               if(students[keys[i]].admitted == "Yes")
-                val = "<td>Admitted</td>"
-               else
-                val = "<td><a id='conf"+i+"' name='sendConfirmation' href='#'>Give Admission</a></td>";
-
-                tr = tr+"<tr> <td id='name"+i+"'>"+students[keys[i]].profile.personal_information.first_name +' '+students[keys[i]].profile.personal_information.last_name+"</td> <td id='email"+i+"'>"+students[keys[i]].profile.contact_details.email+"</td> <td id='course"+i+"'>"+students[keys[i]].course.courseName+"</td><td id='gpa"+i+"'>"+students[keys[i]].education.grades.cumulative_GPA + "/" +students[keys[i]].education.grades.GPA_scale+"</td> <td id='nativty"+i+"'>"+students[keys[i]].profile.geography.citizenship+"</td> <td id='fee"+i+"'></td>" +val+"</tr>";
+                tr = tr+"<tr> <td id='name"+i+"'>"+students[keys[i]].profile.personal_information.first_name +' '+students[keys[i]].profile.personal_information.last_name+"</td> <td id='email"+i+"'>"+students[keys[i]].profile.contact_details.email+"</td> <td id='course"+i+"'>"+students[keys[i]].course.courseName+"</td><td id='gpa"+i+"'>"+students[keys[i]].education.grades.cumulative_GPA + "/" +students[keys[i]].education.grades.GPA_scale+"</td> <td id='nativty"+i+"'>"+students[keys[i]].profile.geography.citizenship+"</td> <td id='fee"+i+"'></td> <td id='"+students[keys[i]].profile.contact_details.email+"'><a href='#'>Give Admissions</a></td></tr>";
+               // $("#name"+i).append(students[keys[i]].profile.personal_information.first_name +' '+students[keys[i]].profile.personal_information.last_name); 
+               // $("#course"+i).append(students[keys[i]].course.courseName);
+               // $("#email"+i).append(students[keys[i]].profile.contact_details.email);
+               // $("#nativty"+i).append(students[keys[i]].profile.geography.citizenship);
+               // $("#gpa"+i).append(students[keys[i]].education.grades.cumulative_GPA + "/" +students[keys[i]].education.grades.GPA_scale);
             }
              $("tbody").html(tr);
-               $(document).on("click","a[name='sendConfirmation']", function (e) {
-                      $.post("/meta/sendConfirmation",{email:students[keys[i]].profile.contact_details.email},function(dataa){
-                        console.log(dataa);
-                        $("#conf"+i).fadeOut(1000);
-                        $.post("/student/Admit",{email:students[keys[i]].profile.contact_details.email},function(dataa){
-
-                            });
-                  });
-                });
+            //$("#salutation").html("<b>Congratulations "+student.profile.personal_information.first_name+"!</b>");
+            //$("#selectedCourse").html("You have now succesfully enrolled into <b>"+student.course.courseName+ "</b> Course.");
+            // var i = 1;
+            
          });
    </script>
 </html>

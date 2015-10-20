@@ -38,30 +38,17 @@
 	</div>
 	<div class="col-md-10 row">
 	<h2 class="col-md-6" style="color:rgba(255, 255, 255, .9); font-family:lucida calligraphy">Franklin Jefferson University</h2>
-	<div class="col-md-6 text-right">
-		<br>
-		<br>
-		<a id="myprofile" href="Profile.html"></a>
-		<a href="#">Course Catalog</a>
-		<a href="studentDashboard.html">My dashboard</a>
-		<a href="#" name="logout">Logout</a>
-	</div>
 	</div> 
 	</div>	
 	</div>
 
 	<div id="profile" class="container">
 		<div class="row">
-			<div class="col-md-3">
-				<br><img src="noimage.png"><br>
-				<h1 id="myName"></h1>
-				<button id="edit" class="btn btn-primary">Edit Profile</button>
-			</div>
-			<div class="col-md-9 text-left">
+			<div class="col-md-12 text-left">
 				<br><br>
 				<h4 id="salutation"></h4><br>
 				<p id="selectedCourse"></p>
-				<p>We will get back to you soon through an email confirmation.</p><br>
+				<p>We will get back to you soon through an email confirmation link.</p><br>
 				<p>-- FJU Admissions Team</p>
 			</div>
 		</div>
@@ -69,19 +56,6 @@
 </body>
 <script src="app.js" type="text/javascript"></script>
 <script type="text/javascript">
-  $("#headingOne").css({"background-image":"none", "background-color":"#2d4250", "color":"white"});
-  $(".collapsed").parent("h4").parent("div").css({"background-image":"none", "background-color":"#eee", "color":"black"});
-  $("[data-toggle='collapse']").click(function(){
-    $(".panel-heading").css({"background-image":"none", "background-color":"#eee", "color":"black"});
-    $(this).parent("h4").parent("div").css({"background-image":"none", "background-color":"#2d4250", "color":"white"});
-  });
-  
-  
-  $(function() {
-    $( "#tabs" ).tabs().addClass( "ui-tabs-vertical ui-helper-clearfix" );
-    $( "#tabs li" ).removeClass( "ui-corner-top" ).addClass( "ui-corner-left" );
-  });
-  
   	$.post("/meta/sessionexist",{dummy:"dum"},function(data){
 		console.log(data);
 		$.post( "/meta/getStudentObj",{email:data}, function( student ) {
@@ -89,12 +63,8 @@
 			student = JSON.parse(student);
 			$("#myprofile").html("<b>"+student.profile.personal_information.first_name+"</b>");
 			$("#salutation").html("<b>Congratulations "+student.profile.personal_information.first_name+"!</b>");
-			$("#selectedCourse").html("You have now succesfully enrolled into <b>"+student.course.courseName+ "</b> Course.");
-			$("#myName").html(student.profile.personal_information.first_name +' '+student.profile.personal_information.last_name); 
+			$("#selectedCourse").html("You have now succesfully enrolled into <b>"+student.course.courseName+ "</b> Course."); 
 		});
-	});
-	$("#edit").click(function(){
-		window.location.href = "Apply.html";
 	});
 </script>
 </html>

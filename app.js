@@ -1640,8 +1640,35 @@ $('#sendPin').click(function(){
 	}
 });
 
-$('#validate').click(function(){
+$('#validate, #login').click(function(){
 	//var resp = grecaptcha.getResponse()
+	var userExist = 0;
+		$.post( "/meta/getStudentObj",{email:$('#email').val()}, function( student ) {
+			student = JSON.parse(student);
+			if (student.profile.contact_details.email != ""){
+				userExist = 1;
+			}  
+
+			var link = "";
+			if($(this).attr("id") == "validate"){
+				if (userExist == 0)
+					link = "Apply.html";
+				else{
+					if (student.admitted == "Yes")
+					link = "Profile.html";
+				else
+					link = "enrollmentConfirmation.html";
+			}
+			}
+			else{
+				if (student.admitted == "Yes")
+					link = "Profile.html";
+				else
+					link = "enrollmentConfirmation.html";
+			}
+	
+		console.log(userExist);
+	
 	if(true) {
 			var pass = true;
 			var pi = $("#pin").val();
@@ -1682,7 +1709,7 @@ $('#validate').click(function(){
 								console.log("test");
 								$.post("/meta/login",{email:data},function(dataa){
 									console.log(dataa);
-									window.location.href="Apply.html"
+									window.location.href = link;
 								});
 								
 							} else {
@@ -1693,6 +1720,7 @@ $('#validate').click(function(){
 						});
 			}
 	}
+		});
 });
 
 var loadCaptcha = function() {
@@ -1706,6 +1734,12 @@ var loadCaptcha = function() {
 $(document).on("click","a[name='logout']", function (e) {
         $.get("/meta/logout",function(dataa){
 			console.log(dataa);
+			window.location.href = "login.html"
+		});
+    });
+$(document).on("click","a[name='nouser']", function (e) {
+        $.get("/meta/logout",function(dataa){
+			console.log(dataa);
 			window.location.href = "apply-pin.html"
 		});
     });
@@ -1715,7 +1749,7 @@ function sessionexist() {
 	$.post("/meta/sessionexist",{dummy:"dum"},function(data){
 			console.log(data);
 			if(data == "None")
-				window.location.href="apply-pin.html"
+				window.location.href="login.html"
 			else {
 				var html = "If " + data + " is not your email then "  
 				$("#welcome").html(html);

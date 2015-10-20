@@ -93,7 +93,14 @@ class HeatMap(ndb.Model):
     ypos = ndb.StringProperty(indexed=True)
     email = ndb.StringProperty(indexed=True)
     status = ndb.StringProperty(indexed=True) 
-    
+
+def staff_key(logger_name = "staff_key"):
+    return ndb.Key("staff_key",logger_name)
+
+class staff(ndb.Model):
+    email = ndb.StringProperty(indexed=True)
+    position = ndb.StringProperty(indexed=True)
+
 def Student_key(logger_name = "studentKey"):
     return ndb.Key("contentKey",logger_name)
 
@@ -183,7 +190,17 @@ class Student(ndb.Model):
     courseName = ndb.StringProperty(indexed=True)
     breadthCourses = ndb.StringProperty(indexed=True)
     specialization = ndb.StringProperty(indexed=True)
-    
+    admitted = ndb.StringProperty(indexed = True)
+
+class saveStaff(webapp2.RequestHandler):
+    def post(self):
+        email = self.request.get("email")
+        position = self.request.get("position")
+        keycontent = self.request.get('logger_name',"staff_key")
+        dataa = staff(parent = staff_key(keycontent))
+        dataa.email = email
+        dataa.position = position
+        dataa.put()
     
 
 class saveStudent(webapp2.RequestHandler):
@@ -304,9 +321,23 @@ class saveStudent(webapp2.RequestHandler):
             dataa.email = student['profile']['contact_details']['email']
             dataa.phone = student['profile']['contact_details']['phone_no']
             dataa.skype = student['profile']['contact_details']['skype_id']
+            dataa.admitted  = "No"
             dataa.put()
-            self.response.write("success2")            
-            
+            self.response.write("success2")        
+
+
+class Admit(webapp2.RequestHandler):
+    def post(self):
+        email = self.request.get("email")
+        keycontent = self.request.get('logger_name',"studentKey")
+        qry = Student.query(ancestor = Student_key(keycontent))
+        qry = qry.filter(Student.email == email)
+        data = qry.fetch()
+        if len(data) > 0 :
+            for row in data:
+                row.admitted = "Yes"
+                row.put()
+
 class getStudent(webapp2.RequestHandler):
     def post(self):
         #get student
@@ -456,6 +487,8 @@ class getStudent(webapp2.RequestHandler):
             course["breadthCourses"] = row.breadthCourses
             course["specialization"] = row.specialization
             student["course"] = course
+            student["admitted"] = row.admitted
+
                                 
         student_json = json.dumps(student)
         self.response.write(student_json)
@@ -550,6 +583,7 @@ class getStudents(webapp2.RequestHandler):
             course["breadthCourses"] = row.breadthCourses
             course["specialization"] = row.specialization
             student["course"] = course
+            student["admitted"] = row.admitted
             students[row.email] = student
                                 
         student_json = json.dumps(students)
@@ -565,7 +599,50 @@ class existStudent(webapp2.RequestHandler):
             self.response.write("exist")
         else:
             self.response.write("doesn't exist")
-global stat 
+global stat
+class sendConfirmation(webapp2.RequestHandler):
+    def post(self):
+        email = self.request.get("email")
+        #req = requests.post("https://www.google.com/recaptcha/api/siteverify",{"secret":"6LdzsggTAAAAAMgP4xV_KDRLSLvbEragkVA2NBzJ","response":resp})
+        keycontent = self.request.get('logger_name',"studentKey")
+        qry = Student.query(ancestor = Student_key(keycontent))
+        qry = qry.filter(Student.email == email)
+        dataa = qry.fetch()
+        pin = ""
+        for i in range (0,4):
+            pin = pin + str(random.randint(0,9))
+        #get all current pins and check exist if exist create new one
+        if len(dataa) > 0:
+            for row in dataa:
+                pin = row.pin
+                row.put()
+        else:
+            data = Student(parent = Student_key(keycontent))
+            data.pin = pin
+            data.email = email
+            data.put()
+        message = mail.EmailMessage(sender="FJU <apply@fju.us>",
+                                subject="FJU Admission Confirmation Link")
+
+        message.to = "<"+email+">"
+        message.body = """ 
+Hello """+email+ """,
+
+Thank you for your interest in FJU.
+
+Please click on the link below to validate your admission.
+
+http://fju-dashboard.appspot.com/login.html
+
+Your Login Credentials are: 
+Email : """+email+"""
+4 Digits Pin : """+pin + """
+
+Thank you,
+
+FJU Admissions Team"""
+        message.send()
+        self.response.write("success") 
 class sendPin(webapp2.RequestHandler):
     def post(self):
         email = self.request.get("email")
@@ -930,10 +1007,13 @@ config['webapp2_extras.sessions'] = {
 app = webapp2.WSGIApplication([
     (r'/(.+\.html)', MainHandler),
     (r'/student/savedetails',saveStudent),
+    (r'/staff/savedetails',saveStaff),
     (r'/student/existstudent',existStudent),
     (r'/meta/getStudentObj', getStudent),
     (r'/meta/getStudentsObj', getStudents),
     (r'/meta/sendpin', sendPin),
+    (r'/student/Admit', Admit),
+    (r'/meta/sendConfirmation', sendConfirmation),
     (r'/meta/validatepin', validatePin),
     (r'/meta/sessionexist', existSesn),
     (r'/meta/login', Login),
